@@ -16,10 +16,4 @@ public class ProjetHotelApplication {
         SpringApplication.run(ProjetHotelApplication.class, args);
     }
 
-//    @Bean
-//    CommandLineRunner start(AccountService accountService) {
-//        repositoryRestConfiguration.exposeIdsFor(AppUser.class);
-//
-//    }
-
 }

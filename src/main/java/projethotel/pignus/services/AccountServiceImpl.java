@@ -48,7 +48,7 @@ public class AccountServiceImpl implements AccountService {
         appUserRepository.save(appUser);
         addRoleToUser(email, "ADMIN");
 
-        //saveTokenAndSendConfirmationEmail(appUser);
+        sendConfirmationEmail(appUser);
 
         return appUser;
     }
@@ -98,53 +98,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
 
-
-    @Override
-    @Transactional
-    public String confirm(String token) {
-        ConfirmationToken confirmationToken = confirmationTokenService
-                .getToken(token);
-        if (confirmationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("Token expiré");
-        }
-        if (confirmationToken.getConfirmedAt() != null) {
-            throw new IllegalStateException("Cet email a été déjà confirmé");
-        }
-        try {
-            AppUser appUser = confirmationToken.getAppUser();
-            appUser.setActived(true);
-            appUserRepository.save(appUser);
-            confirmationToken.setConfirmedAt(LocalDateTime.now());
-            confirmationTokenService.saveConfirmationToken(confirmationToken);
-            return "successfully-activated";
-        } catch (Exception e) {
-            System.out.println("Une erreur est survenue lors de l'activation du compte: " + e);
-            return "activation-error";
-        }
-    }
-
-
-    public void saveTokenAndSendConfirmationEmail(AppUser appUser) {
+    public void sendConfirmationEmail(AppUser appUser) {
         //Sending confirmation email to user
-            //Generate and save token
-        int token_time_limit = 30;
-        String token = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken = new ConfirmationToken(
-                token,
-                LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(token_time_limit),
-                appUser
-        );
-        confirmationTokenService.saveConfirmationToken(confirmationToken);
-            //Send email
-        String link = "http://localhost:8080/api/registration/confirm?token="+token;
-//        String link = "http://www.toctocdoc.sn/api/registration/confirm?token="+token;
         Map<String, Object> datas = new HashMap<String, Object>();
         datas.put("name", appUser.getFirstname());
-        datas.put("link", link);
-        datas.put("token_time_limit", token_time_limit);
-        //emailSender.sendEmail(appUser.getEmail(), buildEmail(appUser.getFirstname(), link));
-        //emailSender.sendEmail(appUser.getEmail(), buildEmailVerification(appUser.getFirstname(), link, token_time_limit));
         emailSender.sendConfirmationEmail(appUser.getEmail(), "Email de confirmation", datas);
     }
 

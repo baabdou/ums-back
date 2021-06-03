@@ -37,21 +37,14 @@ public class EmailSenderImpl implements EmailSender{
                     MimeMessageHelper.MULTIPART_MODE_MIXED,
                     StandardCharsets.UTF_8.name()
             );
-
-//            URL url = getClass().getResource("/static/images/logo_web.png");
-//            Resource logo = new InputStreamResource(url.openStream());
             Context context = new Context();
-//            datas.put("logo", new ClassPathResource("images/logo_web.png"));
             context.setVariables(datas);
-//            context.setVariable("logo", new ClassPathResource("images/logo_web.png"));
-            String html = springTemplateEngine.process("confirmation-email1", context);
+            String html = springTemplateEngine.process("confirmation-email", context);
 
             mimeMessageHelper.setTo(to);
             mimeMessageHelper.setText(html, true);
             mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setFrom("contact@toctocdoc.com");
-//            mimeMessageHelper.addAttachment("logo_web.png", new ClassPathResource("images/logo_web.png"));
-//            mimeMessageHelper.addInline("logo", logo);
+            mimeMessageHelper.setFrom("info@ums.sn");
 
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {

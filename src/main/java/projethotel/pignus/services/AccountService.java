@@ -12,6 +12,5 @@ public interface AccountService
     AppRole saveRole(AppRole role);
     AppUser loadUserByEmail(String email);
     void addRoleToUser(String email,String rolename);
-    String confirm(String token);
 
 }
